@@ -27,4 +27,9 @@ class YamlTest {
         val out = Yaml.dump(linkedMapOf("50" to linkedMapOf("v" to "yes")))
         assertEquals("\"50\":\n  v: \"yes\"\n", out)
     }
+
+    @Test fun pathsWithSlashesStayPlainButColonsAreQuoted() {
+        val out = Yaml.dump(linkedMapOf("model_path" to "item/ruby", "item_model" to "kyle:ruby"))
+        assertEquals("model_path: item/ruby\nitem_model: \"kyle:ruby\"\n", out)
+    }
 }

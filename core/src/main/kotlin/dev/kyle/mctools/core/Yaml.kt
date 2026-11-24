@@ -2,7 +2,7 @@ package dev.kyle.mctools.core
 
 /** Tiny YAML writer for the config files we generate (maps, lists of scalars, scalars). */
 object Yaml {
-    private val plain = Regex("^[A-Za-z_][A-Za-z0-9_]*$")
+    private val plain = Regex("^[A-Za-z_][A-Za-z0-9_/]*$")
     private val plainKey = Regex("^[A-Za-z0-9_.\\-]+$")
     private val digits = Regex("^[0-9]+$")
     private val reserved = setOf("true", "false", "yes", "no", "on", "off", "null", "y", "n")
