@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -55,16 +56,40 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import dev.kyle.mctools.ui.FontChoice
 import dev.kyle.mctools.ui.KButton
+import dev.kyle.mctools.ui.Pill
 import dev.kyle.mctools.ui.Prefs
 import dev.kyle.mctools.ui.ThemeChoice
+import dev.kyle.mctools.ui.cardStyle
 import dev.kyle.mctools.ui.persistTree
+import dev.kyle.mctools.ui.statusColor
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+
+/** Top bar + eyebrow + headline used by every tab. */
+@Composable
+fun PageHeader(eyebrow: String, headline: String, sub: String?, trailing: @Composable () -> Unit = {}) {
+    val cs = MaterialTheme.colorScheme
+    Column(Modifier.padding(horizontal = 20.dp)) {
+        Row(Modifier.padding(top = 16.dp).height(56.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(cs.primary), contentAlignment = Alignment.Center) {
+                Text("K", color = cs.onPrimary, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+            }
+            Text("KyleMCTools", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Pill("v${AppConfig.version}", dot = statusColor(true))
+            trailing()
+        }
+        Text(eyebrow, color = cs.primary, fontSize = 14.sp, letterSpacing = 2.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 12.dp))
+        Text(headline, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 6.dp))
+        if (sub != null) Text(sub, color = cs.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 6.dp))
+    }
+}
 
 @Composable
 fun HomeScreen(
@@ -82,7 +107,7 @@ fun HomeScreen(
     fun goTo(page: Int) { scope.launch { pager.animateScrollToPage(page.coerceIn(0, tools.lastIndex)) } }
 
     Column(
-        Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()
+        Modifier.fillMaxSize().statusBarsPadding()
             .onKeyEvent { e ->
                 if (e.type != KeyEventType.KeyDown) false else when (e.key) {
                     Key.DirectionLeft -> { goTo(pager.currentPage - 1); true }
@@ -93,76 +118,72 @@ fun HomeScreen(
             }
             .focusRequester(focus).focusable(),
     ) {
-        Row(Modifier.padding(24.dp, 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box(Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(cs.primary), contentAlignment = Alignment.Center) {
-                Text("K", style = MaterialTheme.typography.headlineLarge, color = cs.onPrimary)
-            }
-            Column(Modifier.weight(1f)) {
-                Text("KyleMCTools", style = MaterialTheme.typography.titleLarge)
-                Text("by KyleTheCat", style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant)
-            }
+        PageHeader("${tools.size} TOOLS", "Pick a tool.", "Swipe the cards, then open one.") {
             Box(
-                Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(cs.surface).clickable(role = Role.Button) { showSettings = true },
+                Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).border(1.dp, cs.outline, RoundedCornerShape(12.dp))
+                    .clickable(role = Role.Button) { showSettings = true },
                 contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Default.Settings, contentDescription = "Settings") }
+            ) { Icon(Icons.Default.Settings, contentDescription = "Settings", modifier = Modifier.size(20.dp)) }
         }
 
-        HorizontalPager(
-            state = pager, modifier = Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 56.dp), pageSpacing = 16.dp,
-        ) { page ->
-            val offset = ((pager.currentPage - page) + pager.currentPageOffsetFraction).absoluteValue.coerceIn(0f, 1f)
-            ToolCard(
-                tool = tools[page], index = page, total = tools.size,
-                modifier = Modifier.fillMaxHeight().padding(vertical = 12.dp).graphicsLayer {
-                    val s = lerp(0.9f, 1f, 1f - offset)
-                    scaleX = s; scaleY = s; alpha = lerp(0.6f, 1f, 1f - offset)
-                },
-                onClick = { if (page == pager.currentPage) onOpen(tools[page]) else goTo(page) },
-            )
-        }
-
-        Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            tools.indices.forEach { i ->
-                val w by animateDpAsState(if (i == pager.currentPage) 28.dp else 8.dp, label = "dot")
-                Box(Modifier.padding(horizontal = 4.dp).width(w).height(8.dp).clip(CircleShape).background(if (i == pager.currentPage) cs.primary else cs.outline))
+        Box(Modifier.weight(1f).fillMaxWidth().padding(bottom = 110.dp), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                HorizontalPager(
+                    state = pager, modifier = Modifier.fillMaxWidth().heightIn(max = 380.dp),
+                    contentPadding = PaddingValues(horizontal = 40.dp), pageSpacing = 14.dp,
+                ) { page ->
+                    val offset = ((pager.currentPage - page) + pager.currentPageOffsetFraction).absoluteValue.coerceIn(0f, 1f)
+                    ToolCard(
+                        tool = tools[page], index = page, total = tools.size,
+                        modifier = Modifier.fillMaxHeight().padding(vertical = 8.dp).graphicsLayer {
+                            val s = lerp(0.92f, 1f, 1f - offset)
+                            scaleX = s; scaleY = s; alpha = lerp(0.55f, 1f, 1f - offset)
+                        },
+                        current = page == pager.currentPage,
+                        onClick = { if (page == pager.currentPage) onOpen(tools[page]) else goTo(page) },
+                    )
+                }
+                Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    tools.indices.forEach { i ->
+                        val w by animateDpAsState(if (i == pager.currentPage) 28.dp else 8.dp, label = "dot")
+                        Box(Modifier.padding(horizontal = 3.dp).width(w).height(8.dp).clip(CircleShape).background(if (i == pager.currentPage) cs.primary else cs.outline))
+                    }
+                }
+                Text(
+                    "Swipe, drag or use arrow keys", style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant,
+                    textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp),
+                )
             }
         }
-        Text(
-            "Swipe, drag or use arrow keys", style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant,
-            textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-        )
     }
 
     if (showSettings) SettingsDialog(prefs, theme, font, onTheme, onFont) { showSettings = false }
 }
 
 @Composable
-private fun ToolCard(tool: ToolId, index: Int, total: Int, modifier: Modifier, onClick: () -> Unit) {
+private fun ToolCard(tool: ToolId, index: Int, total: Int, modifier: Modifier, current: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
     val press by animateFloatAsState(if (pressed) 0.97f else 1f, label = "cardPress")
-    val bg = if (tool.available) cs.primary else cs.surfaceVariant
-    val fg = if (tool.available) cs.onPrimary else cs.onSurface
     Column(
         modifier.graphicsLayer { scaleX = press; scaleY = press }
-            .clip(RoundedCornerShape(28.dp)).background(bg)
+            .cardStyle(if (current) cs.primary.copy(alpha = 0.6f) else cs.outline)
             .clickable(interactionSource = src, indication = null, role = Role.Button, onClick = onClick)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(Modifier.size(60.dp).clip(CircleShape).background(fg.copy(alpha = 0.18f)), contentAlignment = Alignment.Center) {
-            Icon(tool.icon, contentDescription = null, tint = fg, modifier = Modifier.size(30.dp))
+        Box(Modifier.size(52.dp).clip(RoundedCornerShape(14.dp)).background(cs.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(tool.icon, contentDescription = null, tint = cs.onPrimaryContainer, modifier = Modifier.size(28.dp))
         }
-        Text(tool.title, style = MaterialTheme.typography.headlineMedium, color = fg, modifier = Modifier.padding(top = 8.dp))
-        Text(tool.subtitle, style = MaterialTheme.typography.bodyLarge, color = fg.copy(alpha = 0.85f))
+        Text(tool.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 6.dp))
+        Text(tool.subtitle, style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant)
         Box(Modifier.weight(1f))
-        Text(
-            if (tool.available) "Tool ${index + 1} of $total" else "Coming in phase ${tool.phase}",
-            style = MaterialTheme.typography.bodyMedium, color = fg.copy(alpha = 0.85f),
-        )
-        KButton(if (tool.available) "Open tool" else "Preview", onClick, Modifier.fillMaxWidth(), primary = false)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Tool ${index + 1} of $total", style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant, modifier = Modifier.weight(1f))
+            if (tool.available) Pill("Ready", dot = statusColor(true)) else Pill("Phase ${tool.phase}")
+        }
+        KButton(if (tool.available) "Open tool" else "Preview", onClick, Modifier.fillMaxWidth(), primary = tool.available)
     }
 }
 

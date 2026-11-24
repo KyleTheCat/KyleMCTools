@@ -16,6 +16,9 @@ object Js {
     fun parseObject(text: String): JsonObject? =
         try { lenient.parseToJsonElement(text.removePrefix("\uFEFF")) as? JsonObject } catch (e: Exception) { null }
 
+    fun parseElement(text: String): JsonElement? =
+        try { lenient.parseToJsonElement(text.removePrefix("\uFEFF")) } catch (e: Exception) { null }
+
     fun write(element: JsonElement): String = pretty.encodeToString(JsonElement.serializer(), element) + "\n"
 }
 

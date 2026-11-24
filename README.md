@@ -1,32 +1,88 @@
-# KyleMCTools (by KyleTheCat)
+<p align="center">
+  <img src="docs/icon.svg" width="112" alt="KyleMCTools icon">
+</p>
 
-All-in-one toolkit for Minecraft server owners. Native Android app: Kotlin + Jetpack Compose.
+<h1 align="center">KyleMCTools</h1>
+<p align="center"><b>All-in-one toolkit for Minecraft server owners.</b><br>Native Android app by KyleTheCat.</p>
 
-## Build the APK with GitHub Actions
-1. Create a new GitHub repository and upload this whole folder (keep `.github/workflows/build.yml`).
-2. Open the **Actions** tab, then **Build APK**, then **Run workflow** (it also runs on every push).
-3. When it finishes, download the **KyleMCTools-debug-apk** artifact, unzip it, and install `app-debug.apk` on your phone (allow installs from your browser or Files app).
-4. The **test-reports** artifact has the unit-test results. If the build fails, open the failed step and send me the log.
+<p align="center">
+  <a href="../../actions/workflows/build.yml"><img src="../../actions/workflows/build.yml/badge.svg" alt="Build"></a>
+  <a href="../../releases/latest"><img src="https://img.shields.io/github/v/release/KyleTheCat/KyleMCTools?label=latest" alt="Latest release"></a>
+</p>
 
-No Gradle wrapper is included on purpose: the workflow installs Gradle 8.9 itself. (Android Studio users: open the folder and let it sync.)
+> The badge links assume the repo is `KyleTheCat/KyleMCTools`. If yours is different, edit the badge URL above.
 
-## Layout
+## What it is
+
+Server owners often have a resource pack and a pile of config work around it. KyleMCTools does that work on your phone: pick a zip, choose options, and get ready-to-use files in a folder you choose. It never edits your original files; every run works on a copy and writes to a new timestamped folder.
+
+## Tools
+
+| # | Tool | What it does | Status |
+|---|------|--------------|--------|
+| 1 | Java to Bedrock | Converts a Java resource pack to a Bedrock pack and writes the Geyser mappings, a `config.yml` snippet and install notes | Ready |
+| 2 | Pack to plugin config | Generates Nexo, ItemsAdder or Oraxen item config plus server-ready files from a pack | Ready |
+| 3 | Pack Optimizer | Shrinks Java and Bedrock packs with before/after sizes | Phase 2 |
+| 4 | Pack Protector | Makes packs harder to copy (honest about what is realistic) | Phase 2 |
+| 5 | MEG Converter | ModelEngine `.bbmodel` to Bedrock models for GeyserModelEngine | Phase 3 |
+| 6 | Version Converter | Moves a pack between Minecraft versions | Phase 3 |
+| 7 | DeluxeMenus Editor | Visual editor for DeluxeMenus GUIs | Phase 4 |
+| 8 | ShopGUI Editor | Visual editor for EconomyShopGUI shops | Phase 4 |
+| 9 | Rank Prefix Editor | Rank prefixes with image previews | Phase 5 |
+
+Targets: Paper, Spigot, Purpur, Folia, with Velocity and BungeeCord setups, on a wide range of Minecraft versions (1.16 up to the newest).
+
+## How the app works
+
+1. **Pick a tool** on the Tools tab (swipe, drag, arrow keys or tap).
+2. **Drop or choose a zip.** The app copies it into private cache, so your original is untouched.
+3. **Run.** Progress and a live log show what is happening. Bad or corrupted files give a friendly message instead of a crash.
+4. **Get results** in `KyleMCTools_Output/<ToolName>/<project>_<timestamp>/` inside the folder you picked on first run.
+5. **Activity** keeps your last 50 runs with their logs. **About** shows the author, repo link and changelog, and tells you when a newer release is out.
+
+## Install
+
+1. Open the [latest release](../../releases/latest) and download the `.apk`.
+2. Open it on your phone and allow installs from your browser or Files app.
+3. New versions install over the old one (all builds use the same signing key).
+
+## Build it yourself
+
+Everything builds on GitHub Actions, no Android Studio needed:
+
+1. Fork or upload this repo to GitHub.
+2. **Actions > Build APK > Run workflow**, then download the `KyleMCTools-debug-apk` artifact.
+3. To publish a release the app can detect: add a section for the version to `CHANGELOG.md`, then push a tag:
+   ```
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+   The **Release APK** workflow builds, tests and attaches the APK. The app's About page compares that tag with the installed version.
+
+Locally: JDK 17, Gradle 8.9, Android SDK 35.
+
+## Project layout
+
 ```
-app/                      shell: swipe-card home, settings, navigation
-core/                     pure Kotlin: zip reading, pack scanner, JSON/YAML helpers, reporter
-ui/                       theme + Minecraft font, shared components, task runner, output exporter
-tools/geyser-converter    Tool 1: Java to Bedrock + Geyser files
-tools/plugin-config       Tool 2: pack to Nexo / ItemsAdder / Oraxen config
-testdata/                 sample packs (make_samples.py regenerates them)
+app/                      shell: floating nav, Tools / Activity / About, settings
+core/                     pure Kotlin: zip reading, pack scanner, JSON/YAML, versions, activity log model
+ui/                       theme, Minecraft font, shared components, task runner, output exporter
+tools/geyser-converter    Tool 1
+tools/plugin-config       Tool 2
+testdata/                 sample packs (python3 testdata/make_samples.py regenerates them)
+docs/                     icon and assets
 ```
 
-## Output
-Results go to `KyleMCTools_Output/<ToolName>/<project>_<timestamp>/` inside the folder you pick on first run (Settings can change it).
-Originals are never modified: the input is copied to app cache first, and every run creates a new timestamped folder.
+## Testing
 
-## Font
-`ui/src/main/res/font/minecraft.ttf` is used by default. Settings has a Minecraft / Clean switch.
-The font has no arrow, ellipsis or check glyphs, so the UI avoids them.
+`gradle :core:test testDebugUnitTest` runs the unit tests (zip handling, scanner, converters, YAML, versions). The `testdata/` packs cover legacy and 1.21.4+ packs, a wrapped zip with a broken JSON, a corrupt zip and a non-pack zip.
 
-## Phase 1 status
-Tools 1 and 2 are built. Tools 3 to 9 show a "coming in phase N" card.
+## Notes
+
+- The signing key in `app/kmt.keystore` is committed on purpose so updates install cleanly. It is meant for sideloaded builds, not Play Store publishing.
+- The Minecraft font is a fan-made font; check its license before publishing the app on a store.
+- Not affiliated with Mojang, Microsoft or the plugins mentioned.
+
+## Credits
+
+Made by [KyleTheCat](https://github.com/KyleTheCat).

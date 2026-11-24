@@ -64,7 +64,7 @@ fun ToolWorkspace(
     }
     val pickTree = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         if (uri != null) { persistTree(ctx, uri); prefs.outputTree = uri; tree = uri }
-        if (pendingRun) { pendingRun = false; vm.run(toolName, tree, task) }
+        if (pendingRun) { pendingRun = false; vm.run(toolName, title, tree, task) }
     }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
@@ -91,7 +91,7 @@ fun ToolWorkspace(
             KButton(
                 text = if (st.phase == Phase.RUNNING) "Working..." else runLabel,
                 enabled = canRun, modifier = Modifier.fillMaxWidth(),
-                onClick = { if (tree == null) { pendingRun = true; pickTree.launch(null) } else vm.run(toolName, tree, task) },
+                onClick = { if (tree == null) { pendingRun = true; pickTree.launch(null) } else vm.run(toolName, title, tree, task) },
             )
             if (st.fileName != null && tree == null && st.phase != Phase.RUNNING) {
                 Text(

@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// On GitHub Actions these come from the build itself: "owner/repo" and the pushed tag (v0.2.0 -> 0.2.0).
+val repoSlug = System.getenv("GITHUB_REPOSITORY") ?: "KyleTheCat/KyleMCTools"
+val tagVersion = if (System.getenv("GITHUB_REF_TYPE") == "tag") System.getenv("GITHUB_REF_NAME")?.removePrefix("v") else null
+val appVersion = tagVersion ?: "0.1.1"
+val appCode = appVersion.substringBefore('-').split('.').let { p ->
+    (p.getOrNull(0)?.toIntOrNull() ?: 0) * 10000 + (p.getOrNull(1)?.toIntOrNull() ?: 0) * 100 + (p.getOrNull(2)?.toIntOrNull() ?: 0)
+}
+
 android {
     namespace = "dev.kyle.mctools"
     compileSdk = 35
@@ -11,16 +19,35 @@ android {
         applicationId = "dev.kyle.mctools"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-phase1"
+        versionCode = appCode
+        versionName = appVersion
+        buildConfigField("String", "GITHUB_REPO", "\"$repoSlug\"")
     }
-    buildTypes { release { isMinifyEnabled = false } }
+    // One fixed key for every build, so a new APK installs over the old one as an update.
+    signingConfigs {
+        create("kmt") {
+            storeFile = file("kmt.keystore")
+            storePassword = "kylemctools"
+            keyAlias = "kmt"
+            keyPassword = "kylemctools"
+        }
+    }
+    buildTypes {
+        debug { signingConfig = signingConfigs.getByName("kmt") }
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("kmt")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 }
 
 dependencies {

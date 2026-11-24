@@ -221,3 +221,41 @@ fun formatBytes(b: Long): String = when {
     b >= 1024 -> "%.0f KB".format(b / 1024.0)
     else -> "$b B"
 }
+
+
+/** Bordered dark card used across the app. */
+@Composable
+fun Modifier.cardStyle(borderColor: Color = MaterialTheme.colorScheme.outline): Modifier {
+    val shape = RoundedCornerShape(20.dp)
+    return this.clip(shape).background(MaterialTheme.colorScheme.surface).border(1.dp, borderColor, shape)
+}
+
+/** Small rounded status pill, optionally with a colored dot. */
+@Composable
+fun Pill(text: String, modifier: Modifier = Modifier, textColor: Color = MaterialTheme.colorScheme.onSurface, dot: Color? = null) {
+    val shape = RoundedCornerShape(20.dp)
+    androidx.compose.foundation.layout.Row(
+        modifier.clip(shape).background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .padding(horizontal = 11.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        if (dot != null) Box(Modifier.size(8.dp).clip(RoundedCornerShape(4.dp)).background(dot))
+        Text(text, color = textColor, fontSize = 14.sp)
+    }
+}
+
+/** Compact outlined button for rows of actions inside cards. */
+@Composable
+fun SmallButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface) {
+    val shape = RoundedCornerShape(12.dp)
+    Box(
+        modifier.heightIn(min = 44.dp).clip(shape).border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .clickable(role = Role.Button, onClick = onClick).padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center,
+    ) { Text(text, color = color, fontSize = 15.sp) }
+}
+
+/** Success / warning / danger colors that work on both light and dark. */
+@Composable
+fun statusColor(ok: Boolean): Color = if (ok) { if (isDarkColors()) Color(0xFF4ADE9A) else Color(0xFF1E7A4F) } else MaterialTheme.colorScheme.error

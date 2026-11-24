@@ -27,11 +27,11 @@ private val LightColors = lightColorScheme(
 
 private val DarkColors = darkColorScheme(
     primary = Color(0xFF8B85FF), onPrimary = Color(0xFF14123D),
-    primaryContainer = Color(0xFF2A2766), onPrimaryContainer = Color(0xFFDAD8FF),
-    background = Color(0xFF0F1020), onBackground = Color(0xFFEDEEFA),
-    surface = Color(0xFF181A30), onSurface = Color(0xFFEDEEFA),
-    surfaceVariant = Color(0xFF22243F), onSurfaceVariant = Color(0xFFA9ADCB),
-    outline = Color(0xFF34375A), error = Color(0xFFFF8A80),
+    primaryContainer = Color(0xFF1E1C3F), onPrimaryContainer = Color(0xFFC9C6FF),
+    background = Color(0xFF0B0C10), onBackground = Color(0xFFF2F3F7),
+    surface = Color(0xFF12141A), onSurface = Color(0xFFF2F3F7),
+    surfaceVariant = Color(0xFF1A1D26), onSurfaceVariant = Color(0xFF9AA0B2),
+    outline = Color(0xFF23262F), error = Color(0xFFFF8A80),
 )
 
 val MinecraftFamily = FontFamily(Font(R.font.minecraft))

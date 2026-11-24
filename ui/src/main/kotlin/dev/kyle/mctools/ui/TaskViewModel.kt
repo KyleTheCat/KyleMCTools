@@ -70,7 +70,7 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
         return file to name
     }
 
-    fun run(toolName: String, outputTree: Uri?, task: (TaskContext) -> ToolResult) {
+    fun run(toolName: String, toolTitle: String, outputTree: Uri?, task: (TaskContext) -> ToolResult) {
         val input = inputFile ?: return
         if (_state.value.phase == Phase.RUNNING) return
         val project = _state.value.projectName.ifBlank { "pack" }
@@ -88,23 +88,32 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
                 val export = OutputExporter.export(app, outputTree, toolName, Ids.folderName(project), staging)
                 reporter.log(LogLevel.OK, "Saved to ${export.displayPath}")
                 _state.update { it.copy(phase = Phase.DONE, progress = 1f, progressLabel = "Done", summary = result.summary, savedPath = export.displayPath, folderUri = export.folderUri) }
+                record(toolName, toolTitle, true, result.summary, export.displayPath, export.folderUri?.toString())
             } catch (e: ToolException) {
-                fail(reporter, e.userMessage)
+                fail(reporter, e.userMessage, toolName, toolTitle)
             } catch (e: ZipException) {
-                fail(reporter, "That file isn't a valid zip, or it is corrupted. Try re-downloading or re-exporting it.")
+                fail(reporter, "That file isn't a valid zip, or it is corrupted. Try re-downloading or re-exporting it.", toolName, toolTitle)
             } catch (e: OutOfMemoryError) {
-                fail(reporter, "This pack is too big for the memory available on this phone. Close other apps and try again.")
+                fail(reporter, "This pack is too big for the memory available on this phone. Close other apps and try again.", toolName, toolTitle)
             } catch (e: Exception) {
-                fail(reporter, "Something unexpected went wrong. Details: ${e.javaClass.simpleName}: ${e.message ?: "no message"}")
+                fail(reporter, "Something unexpected went wrong. Details: ${e.javaClass.simpleName}: ${e.message ?: "no message"}", toolName, toolTitle)
             } finally {
                 staging.deleteRecursively()
             }
         }
     }
 
-    private fun fail(rep: Reporter, message: String) {
+    private fun fail(rep: Reporter, message: String, tool: String, title: String) {
         rep.log(LogLevel.ERROR, message)
         _state.update { it.copy(phase = Phase.ERROR, message = message) }
+        record(tool, title, false, message, null, null)
+    }
+
+    private fun record(tool: String, title: String, ok: Boolean, summary: String, path: String?, folderUri: String?) {
+        val st = _state.value
+        val log = st.logs.joinToString("\n") { "${it.level.name.lowercase()}: ${it.text}" }
+        val now = System.currentTimeMillis()
+        ActivityRepo.add(ActivityEntry(now, tool, title, st.fileName ?: "", ok, summary, path, folderUri, now, log))
     }
 
     fun reset() {

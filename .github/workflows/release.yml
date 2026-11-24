@@ -1,0 +1,37 @@
+name: Release APK
+
+# Push a tag like v0.2.0 to publish a release with the APK attached.
+# The app checks this repo's latest release and shows "Update available" in About.
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+      - name: Unit tests
+        run: gradle --no-daemon :core:test testDebugUnitTest
+      - name: Build release APK
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Name the APK and write release notes
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          cp app/build/outputs/apk/release/app-release.apk "KyleMCTools-${GITHUB_REF_NAME}.apk"
+          awk -v v="$VER" '/^## /{p=($2==v)} p' CHANGELOG.md > RELEASE_NOTES.md
+          [ -s RELEASE_NOTES.md ] || echo "KyleMCTools ${GITHUB_REF_NAME}" > RELEASE_NOTES.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: KyleMCTools-${{ github.ref_name }}.apk
+          body_path: RELEASE_NOTES.md
