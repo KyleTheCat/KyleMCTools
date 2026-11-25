@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.kyle.mctools.geyser.GeyserConverterScreen
+import dev.kyle.mctools.optimizer.PackOptimizerScreen
 import dev.kyle.mctools.pluginconfig.PluginConfigScreen
+import dev.kyle.mctools.protector.PackProtectorScreen
 import dev.kyle.mctools.ui.KButton
 import dev.kyle.mctools.ui.KyleTheme
 import dev.kyle.mctools.ui.Prefs
@@ -72,6 +74,8 @@ fun KyleApp(prefs: Prefs) {
                     }
                     ToolId.GEYSER -> GeyserConverterScreen(prefs) { open = null }
                     ToolId.PLUGIN -> PluginConfigScreen(prefs) { open = null }
+                    ToolId.OPTIMIZER -> PackOptimizerScreen(prefs) { open = null }
+                    ToolId.PROTECTOR -> PackProtectorScreen(prefs) { open = null }
                     else -> ComingSoon(tool) { open = null }
                 }
             }

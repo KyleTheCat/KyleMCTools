@@ -11,6 +11,7 @@ object Js {
         allowTrailingComma = true
         ignoreUnknownKeys = true
     }
+    private val compactJson = Json
     private val pretty = Json { prettyPrint = true; prettyPrintIndent = "  " }
 
     fun parseObject(text: String): JsonObject? =
@@ -18,6 +19,11 @@ object Js {
 
     fun parseElement(text: String): JsonElement? =
         try { lenient.parseToJsonElement(text.removePrefix("\uFEFF")) } catch (e: Exception) { null }
+
+    fun compact(element: JsonElement): String = compactJson.encodeToString(JsonElement.serializer(), element)
+
+    /** Same JSON with all whitespace removed (and comments dropped). Null if it can't be parsed. */
+    fun minify(text: String): String? = parseElement(text)?.let { compact(it) }
 
     fun write(element: JsonElement): String = pretty.encodeToString(JsonElement.serializer(), element) + "\n"
 }

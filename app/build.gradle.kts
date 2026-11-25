@@ -7,7 +7,7 @@ plugins {
 // On GitHub Actions these come from the build itself: "owner/repo" and the pushed tag (v0.2.0 -> 0.2.0).
 val repoSlug = System.getenv("GITHUB_REPOSITORY") ?: "KyleTheCat/KyleMCTools"
 val tagVersion = if (System.getenv("GITHUB_REF_TYPE") == "tag") System.getenv("GITHUB_REF_NAME")?.removePrefix("v") else null
-val appVersion = tagVersion ?: "0.1.1"
+val appVersion = tagVersion ?: "0.2.0"
 val appCode = appVersion.substringBefore('-').split('.').let { p ->
     (p.getOrNull(0)?.toIntOrNull() ?: 0) * 10000 + (p.getOrNull(1)?.toIntOrNull() ?: 0) * 100 + (p.getOrNull(2)?.toIntOrNull() ?: 0)
 }
@@ -54,4 +54,6 @@ dependencies {
     implementation(project(":ui"))
     implementation(project(":tools:geyser-converter"))
     implementation(project(":tools:plugin-config"))
+    implementation(project(":tools:pack-optimizer"))
+    implementation(project(":tools:pack-protector"))
 }

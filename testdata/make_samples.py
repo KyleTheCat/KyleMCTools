@@ -65,3 +65,34 @@ write("sample_wrapped_with_problems.zip", {
 with open(os.path.join(here, "sample_corrupt.zip"), "wb") as f: f.write(b"PK\x03\x04 this is not really a zip")
 write("sample_not_a_pack.zip", {"readme.txt": b"just a text file"})
 print("sample packs written to", here)
+
+# ---- Phase 2 samples (optimizer / protector) ----
+def png_rgba(colors, size=64, extra=True):
+    raw = b"".join(b"\x00" + b"".join(bytes(colors[(x // 8 + y // 8) % len(colors)]) for x in range(size)) for y in range(size))
+    def chunk(t, d):
+        c = struct.pack(">I", len(d)) + t + d
+        return c + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
+    out = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0))
+    if extra:
+        out += chunk(b"tEXt", b"Software\x00Some Editor " + b"x" * 400) + chunk(b"pHYs", struct.pack(">IIB", 2835, 2835, 1))
+    return out + chunk(b"IDAT", zlib.compress(raw, 1)) + chunk(b"IEND", b"")
+
+cols = [(200, 30, 60, 255), (30, 200, 90, 255), (20, 20, 20, 128), (240, 240, 240, 255)]
+big_json = json.dumps({"parent": "item/generated", "textures": {"layer0": "kyle:item/ruby"}, "display": {"gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.625, 0.625, 0.625]}}}, indent=8).encode()
+write("sample_bloated_pack.zip", {
+    "pack.mcmeta": j({"pack": {"pack_format": 46, "description": "KMT optimizer sample"}}),
+    "assets/kyle/items/ruby.json": j({"model": {"type": "minecraft:model", "model": "kyle:item/ruby"}}),
+    "assets/kyle/models/item/ruby.json": big_json,
+    "assets/kyle/textures/item/ruby.png": png_rgba(cols),
+    "assets/kyle/textures/item/gem.png": png_rgba(cols[::-1]),
+    "assets/kyle/textures/item/orphan_unused.png": png_rgba(cols),
+    "assets/minecraft/textures/block/stone.png": png_rgba(cols),
+    ".DS_Store": b"junk", "art/ruby_source.psd": b"P" * 20000, "Thumbs.db": b"junk",
+})
+write("sample_bedrock_pack.mcpack", {
+    "manifest.json": j({"format_version": 2, "header": {"name": "KMT bedrock sample", "description": "x", "uuid": "11111111-1111-4111-8111-111111111111", "version": [1, 0, 0], "min_engine_version": [1, 16, 0]},
+                        "modules": [{"type": "resources", "uuid": "22222222-2222-4222-8222-222222222222", "version": [1, 0, 0]}]}),
+    "textures/item_texture.json": j({"resource_pack_name": "kmt", "texture_name": "atlas.items", "texture_data": {"ruby": {"textures": ["textures/items/ruby"]}}}),
+    "textures/items/ruby.png": png_rgba(cols),
+})
+print("phase 2 samples written")

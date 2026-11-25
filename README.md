@@ -22,8 +22,8 @@ Server owners often have a resource pack and a pile of config work around it. Ky
 |---|------|--------------|--------|
 | 1 | Java to Bedrock | Converts a Java resource pack to a Bedrock pack and writes the Geyser mappings, a `config.yml` snippet and install notes | Ready |
 | 2 | Pack to plugin config | Generates Nexo, ItemsAdder or Oraxen item config plus server-ready files from a pack | Ready |
-| 3 | Pack Optimizer | Shrinks Java and Bedrock packs with before/after sizes | Phase 2 |
-| 4 | Pack Protector | Makes packs harder to copy (honest about what is realistic) | Phase 2 |
+| 3 | Pack Optimizer | Shrinks Java and Bedrock packs: lossless PNG, JSON minify, junk removal, before/after sizes | Ready |
+| 4 | Pack Protector | Makes casual copying harder: minify, decoys, optional renaming. Honest about the limits | Ready |
 | 5 | MEG Converter | ModelEngine `.bbmodel` to Bedrock models for GeyserModelEngine | Phase 3 |
 | 6 | Version Converter | Moves a pack between Minecraft versions | Phase 3 |
 | 7 | DeluxeMenus Editor | Visual editor for DeluxeMenus GUIs | Phase 4 |
@@ -69,13 +69,15 @@ core/                     pure Kotlin: zip reading, pack scanner, JSON/YAML, ver
 ui/                       theme, Minecraft font, shared components, task runner, output exporter
 tools/geyser-converter    Tool 1
 tools/plugin-config       Tool 2
+tools/pack-optimizer      Tool 3
+tools/pack-protector      Tool 4
 testdata/                 sample packs (python3 testdata/make_samples.py regenerates them)
 docs/                     icon and assets
 ```
 
 ## Testing
 
-`gradle :core:test testDebugUnitTest` runs the unit tests (zip handling, scanner, converters, YAML, versions). The `testdata/` packs cover legacy and 1.21.4+ packs, a wrapped zip with a broken JSON, a corrupt zip and a non-pack zip.
+`gradle :core:test testDebugUnitTest` runs the unit tests (zip handling, scanner, converters, PNG optimizer, protector, YAML, versions). The `testdata/` packs cover legacy and 1.21.4+ packs, a wrapped zip with a broken JSON, a corrupt zip and a non-pack zip.
 
 ## Notes
 

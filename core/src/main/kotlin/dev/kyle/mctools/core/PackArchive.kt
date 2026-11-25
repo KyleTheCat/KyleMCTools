@@ -11,7 +11,7 @@ import java.util.zip.ZipFile
  * Read-only view of a resource pack zip. Never writes to the zip.
  * Handles packs wrapped in a root folder, and ignores unsafe entries (zip-slip, __MACOSX).
  */
-class PackArchive(file: File) : Closeable {
+class PackArchive(file: File, allowAnyZip: Boolean = false) : Closeable {
     private val zip = ZipFile(file)
     private val entries = HashMap<String, ZipEntry>()
     val names: List<String>
@@ -31,8 +31,17 @@ class PackArchive(file: File) : Closeable {
         val mcmeta = allNames.filter { it == "pack.mcmeta" || it.endsWith("/pack.mcmeta") }.minByOrNull { it.length }
         val prefix: String? = when {
             mcmeta != null -> mcmeta.removeSuffix("pack.mcmeta")
-            else -> allNames.firstOrNull { it.startsWith("assets/") || it.contains("/assets/") }?.let {
-                if (it.startsWith("assets/")) "" else it.substring(0, it.indexOf("/assets/") + 1)
+            else -> {
+                val manifest = if (allowAnyZip) allNames.filter { it == "manifest.json" || it.endsWith("/manifest.json") }.minByOrNull { it.length } else null
+                val assets = allNames.firstOrNull { it.startsWith("assets/") || it.contains("/assets/") }?.let {
+                    if (it.startsWith("assets/")) "" else it.substring(0, it.indexOf("/assets/") + 1)
+                }
+                when {
+                    manifest != null -> manifest.removeSuffix("manifest.json")
+                    assets != null -> assets
+                    allowAnyZip -> ""
+                    else -> null
+                }
             }
         }
         if (prefix == null) {
@@ -51,6 +60,12 @@ class PackArchive(file: File) : Closeable {
     }
 
     fun exists(path: String) = entries.containsKey(path)
+
+    /** Uncompressed size of an entry, or 0 if missing/unknown. */
+    fun size(path: String): Long = entries[path]?.size?.coerceAtLeast(0) ?: 0L
+
+    /** Bedrock packs have manifest.json and no pack.mcmeta. */
+    val isBedrock: Boolean get() = exists("manifest.json") && !exists("pack.mcmeta")
 
     fun list(prefix: String): List<String> = names.filter { it.startsWith(prefix) }
 
