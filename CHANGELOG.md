@@ -2,6 +2,10 @@
 
 Newest first. Each section starts with `## <version>`; the release workflow copies the matching section into the GitHub release notes, and the app shows it in About.
 
+## 0.3.0 - 2026-11-26
+- MEG Converter: Blockbench .bbmodel files (single file or a zip) to Bedrock geometry, animations and texture, laid out as input/<modelId>/ for the GeyserModelEngine extension, plus a zip and install notes.
+- Version Converter: moves a Java pack between Minecraft 1.13 and 26.2. Rewrites pack.mcmeta (pack_format, or min_format/max_format from format 65), converts model overrides to 1.21.4 item definitions and back, moves armor textures for 1.21.2, and lists everything else that needs a manual check.
+
 ## 0.2.0 - 2026-11-25
 - Pack Optimizer: lossless PNG compression (palette conversion, metadata removal, best filters), JSON minify, junk-file removal, optional removal of unreferenced textures, before/after size and a report.
 - Pack Protector: JSON minify, decoy files, optional asset renaming (Java), self-check that the result still loads, and an honest notes file about what protection can and can't do.

@@ -1,0 +1,219 @@
+{
+ "meta": {
+  "format_version": "4.10",
+  "model_format": "free"
+ },
+ "name": "sample_golem",
+ "resolution": {
+  "width": 64,
+  "height": 32
+ },
+ "elements": [
+  {
+   "uuid": "c1",
+   "type": "cube",
+   "name": "body",
+   "from": [
+    -4,
+    0,
+    -2
+   ],
+   "to": [
+    4,
+    12,
+    2
+   ],
+   "origin": [
+    0,
+    8,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "box_uv": false,
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    },
+    "west": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    },
+    "up": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      8,
+      12
+     ],
+     "texture": 0
+    }
+   }
+  },
+  {
+   "uuid": "c2",
+   "type": "cube",
+   "name": "head",
+   "from": [
+    -3,
+    12,
+    -3
+   ],
+   "to": [
+    3,
+    18,
+    3
+   ],
+   "origin": [
+    0,
+    12,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "box_uv": true,
+   "uv_offset": [
+    0,
+    16
+   ]
+  }
+ ],
+ "outliner": [
+  {
+   "uuid": "g1",
+   "name": "body",
+   "origin": [
+    0,
+    8,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "children": [
+    "c1",
+    {
+     "uuid": "g2",
+     "name": "head",
+     "origin": [
+      0,
+      12,
+      0
+     ],
+     "rotation": [
+      0,
+      0,
+      0
+     ],
+     "children": [
+      "c2"
+     ]
+    }
+   ]
+  }
+ ],
+ "textures": [
+  {
+   "name": "sample_golem.png",
+   "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGOoiHpGEmIY1TCqYfhqAAB8f7gQu4G7FgAAAABJRU5ErkJggg=="
+  }
+ ],
+ "animations": [
+  {
+   "uuid": "a1",
+   "name": "idle",
+   "loop": "loop",
+   "length": 2.0,
+   "animators": {
+    "g2": {
+     "name": "head",
+     "type": "bone",
+     "keyframes": [
+      {
+       "channel": "rotation",
+       "time": 0,
+       "interpolation": "linear",
+       "data_points": [
+        {
+         "x": 0,
+         "y": 0,
+         "z": 0
+        }
+       ]
+      },
+      {
+       "channel": "rotation",
+       "time": 1,
+       "interpolation": "catmullrom",
+       "data_points": [
+        {
+         "x": 10,
+         "y": 25,
+         "z": 0
+        }
+       ]
+      },
+      {
+       "channel": "rotation",
+       "time": 2,
+       "interpolation": "linear",
+       "data_points": [
+        {
+         "x": 0,
+         "y": 0,
+         "z": 0
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

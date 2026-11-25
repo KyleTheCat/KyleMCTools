@@ -96,3 +96,34 @@ write("sample_bedrock_pack.mcpack", {
     "textures/items/ruby.png": png_rgba(cols),
 })
 print("phase 2 samples written")
+
+# ---- Phase 3 samples (MEG converter / version converter) ----
+import base64
+tiny = base64.b64encode(png((120, 90, 230), 16)).decode()
+bb = {
+  "meta": {"format_version": "4.10", "model_format": "free"}, "name": "sample_golem", "resolution": {"width": 64, "height": 32},
+  "elements": [
+    {"uuid": "c1", "type": "cube", "name": "body", "from": [-4, 0, -2], "to": [4, 12, 2], "origin": [0, 8, 0], "rotation": [0, 0, 0], "box_uv": False,
+     "faces": {d: {"uv": [0, 0, 8, 12], "texture": 0} for d in ["north", "east", "south", "west", "up", "down"]}},
+    {"uuid": "c2", "type": "cube", "name": "head", "from": [-3, 12, -3], "to": [3, 18, 3], "origin": [0, 12, 0], "rotation": [0, 0, 0], "box_uv": True, "uv_offset": [0, 16]}],
+  "outliner": [{"uuid": "g1", "name": "body", "origin": [0, 8, 0], "rotation": [0, 0, 0], "children": ["c1",
+               {"uuid": "g2", "name": "head", "origin": [0, 12, 0], "rotation": [0, 0, 0], "children": ["c2"]}]}],
+  "textures": [{"name": "sample_golem.png", "source": "data:image/png;base64," + tiny}],
+  "animations": [{"uuid": "a1", "name": "idle", "loop": "loop", "length": 2.0, "animators": {
+      "g2": {"name": "head", "type": "bone", "keyframes": [
+        {"channel": "rotation", "time": 0, "interpolation": "linear", "data_points": [{"x": 0, "y": 0, "z": 0}]},
+        {"channel": "rotation", "time": 1, "interpolation": "catmullrom", "data_points": [{"x": 10, "y": 25, "z": 0}]},
+        {"channel": "rotation", "time": 2, "interpolation": "linear", "data_points": [{"x": 0, "y": 0, "z": 0}]}]}}}]}
+with open(os.path.join(here, "sample_model.bbmodel"), "w") as f: json.dump(bb, f, indent=1)
+write("sample_old_pack_1_21.zip", {
+    "pack.mcmeta": j({"pack": {"pack_format": 34, "description": "KMT version sample (1.21)"}}),
+    "assets/minecraft/models/item/stick.json": j({"parent": "item/handheld", "textures": {"layer0": "item/stick"}, "overrides": [
+        {"predicate": {"custom_model_data": 1}, "model": "custom/wand"}, {"predicate": {"custom_model_data": 2}, "model": "custom/staff"}]}),
+    "assets/minecraft/models/custom/wand.json": j({"parent": "item/handheld", "textures": {"layer0": "custom/wand"}}),
+    "assets/minecraft/models/custom/staff.json": j({"parent": "item/handheld", "textures": {"layer0": "custom/staff"}}),
+    "assets/minecraft/textures/custom/wand.png": png((90, 200, 250)), "assets/minecraft/textures/custom/staff.png": png((250, 200, 90)),
+    "assets/minecraft/textures/models/armor/iron_layer_1.png": png((180, 180, 190), 64),
+    "assets/minecraft/textures/models/armor/iron_layer_2.png": png((170, 170, 180), 64),
+    "assets/minecraft/textures/gui/widgets.png": png((60, 60, 60), 64),
+})
+print("phase 3 samples written")

@@ -22,7 +22,10 @@ object Js {
 
     fun compact(element: JsonElement): String = compactJson.encodeToString(JsonElement.serializer(), element)
 
-    /** Same JSON with all whitespace removed (and comments dropped). Null if it can't be parsed. */
+    /**
+     * Same JSON with all whitespace removed (and comments dropped). Null if it can't be parsed.
+     * Numbers may be rewritten in their shortest form (2.50 becomes 2.5); the value is the same.
+     */
     fun minify(text: String): String? = parseElement(text)?.let { compact(it) }
 
     fun write(element: JsonElement): String = pretty.encodeToString(JsonElement.serializer(), element) + "\n"

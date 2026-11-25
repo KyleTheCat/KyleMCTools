@@ -24,8 +24,8 @@ Server owners often have a resource pack and a pile of config work around it. Ky
 | 2 | Pack to plugin config | Generates Nexo, ItemsAdder or Oraxen item config plus server-ready files from a pack | Ready |
 | 3 | Pack Optimizer | Shrinks Java and Bedrock packs: lossless PNG, JSON minify, junk removal, before/after sizes | Ready |
 | 4 | Pack Protector | Makes casual copying harder: minify, decoys, optional renaming. Honest about the limits | Ready |
-| 5 | MEG Converter | ModelEngine `.bbmodel` to Bedrock models for GeyserModelEngine | Phase 3 |
-| 6 | Version Converter | Moves a pack between Minecraft versions | Phase 3 |
+| 5 | MEG Converter | ModelEngine `.bbmodel` to Bedrock geometry, animations and texture for GeyserModelEngine | Ready |
+| 6 | Version Converter | Moves a Java pack between Minecraft 1.13 and 26.2 (pack format, item overrides/definitions, armor folders) | Ready |
 | 7 | DeluxeMenus Editor | Visual editor for DeluxeMenus GUIs | Phase 4 |
 | 8 | ShopGUI Editor | Visual editor for EconomyShopGUI shops | Phase 4 |
 | 9 | Rank Prefix Editor | Rank prefixes with image previews | Phase 5 |
@@ -71,6 +71,8 @@ tools/geyser-converter    Tool 1
 tools/plugin-config       Tool 2
 tools/pack-optimizer      Tool 3
 tools/pack-protector      Tool 4
+tools/meg-converter       Tool 5
+tools/version-converter   Tool 6
 testdata/                 sample packs (python3 testdata/make_samples.py regenerates them)
 docs/                     icon and assets
 ```
