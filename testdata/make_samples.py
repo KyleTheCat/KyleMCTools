@@ -127,3 +127,4 @@ write("sample_old_pack_1_21.zip", {
     "assets/minecraft/textures/gui/widgets.png": png((60, 60, 60), 64),
 })
 print("phase 3 samples written")
+print("sample_deluxemenu.yml and sample_shop_Food.yml are written by hand in this folder")

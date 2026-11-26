@@ -1,0 +1,42 @@
+# Sample DeluxeMenus menu for testing the editor
+menu_title: '&8Server Menu'
+open_command:
+  - menu
+  - m
+size: 27
+items:
+  survival:
+    material: GRASS_BLOCK
+    slot: 11
+    display_name: '&aSurvival'
+    lore:
+      - '&7Click to join survival'
+    left_click_commands:
+      - '[player] server survival'
+  skyblock:
+    material: SAND
+    slot: 13
+    display_name: '&eSkyblock'
+    left_click_commands:
+      - '[player] server skyblock'
+    view_requirement:
+      requirements:
+        perm:
+          type: has permission
+          permission: menu.skyblock
+  close:
+    material: BARRIER
+    slot: 22
+    display_name: '&cClose'
+    left_click_commands:
+      - '[close]'
+    custom_unknown_option: this is kept by the editor
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    slots: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    display_name: ' '
+  bad_command:
+    material: STONE
+    slot: 15
+    left_click_commands:
+      - 'spawn'

@@ -26,8 +26,8 @@ Server owners often have a resource pack and a pile of config work around it. Ky
 | 4 | Pack Protector | Makes casual copying harder: minify, decoys, optional renaming. Honest about the limits | Ready |
 | 5 | MEG Converter | ModelEngine `.bbmodel` to Bedrock geometry, animations and texture for GeyserModelEngine | Ready |
 | 6 | Version Converter | Moves a Java pack between Minecraft 1.13 and 26.2 (pack format, item overrides/definitions, armor folders) | Ready |
-| 7 | DeluxeMenus Editor | Visual editor for DeluxeMenus GUIs | Phase 4 |
-| 8 | ShopGUI Editor | Visual editor for EconomyShopGUI shops | Phase 4 |
+| 7 | DeluxeMenus Editor | Visual chest-grid editor for DeluxeMenus menus | Ready |
+| 8 | ShopGUI Editor | Editor for EconomyShopGUI shops, prices and sections | Ready |
 | 9 | Rank Prefix Editor | Rank prefixes with image previews | Phase 5 |
 
 Targets: Paper, Spigot, Purpur, Folia, with Velocity and BungeeCord setups, on a wide range of Minecraft versions (1.16 up to the newest).
@@ -73,6 +73,8 @@ tools/pack-optimizer      Tool 3
 tools/pack-protector      Tool 4
 tools/meg-converter       Tool 5
 tools/version-converter   Tool 6
+tools/deluxemenus-editor  Tool 7
+tools/shop-editor         Tool 8
 testdata/                 sample packs (python3 testdata/make_samples.py regenerates them)
 docs/                     icon and assets
 ```

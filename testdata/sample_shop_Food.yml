@@ -1,0 +1,31 @@
+# Sample EconomyShopGUI shop (shops/Food.yml) for testing the editor
+pages:
+  page1:
+    gui-rows: 3
+    title: "&8Food shop"
+    items:
+      1:
+        material: APPLE
+        buy: 10
+        sell: 2.5
+        lore:
+        - "&7A tasty apple"
+      2:
+        material: BREAD
+        buy: 6
+        sell: 1.5
+        stock-limit-player: 64
+      3:
+        material: GOLDEN_APPLE
+        buy: 250
+        sell: -1
+        name: "&6Golden Apple"
+      4:
+        material: COOKED_BEEF
+        buy: 12
+        sell: 20
+        slot: 30
+      fill:
+        material: GRAY_STAINED_GLASS_PANE
+        name: " "
+        slot: 18-26

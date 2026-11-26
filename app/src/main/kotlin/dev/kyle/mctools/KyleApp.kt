@@ -29,10 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.kyle.mctools.geyser.GeyserConverterScreen
+import dev.kyle.mctools.menus.DeluxeMenusEditorScreen
 import dev.kyle.mctools.meg.MegConverterScreen
 import dev.kyle.mctools.optimizer.PackOptimizerScreen
 import dev.kyle.mctools.pluginconfig.PluginConfigScreen
 import dev.kyle.mctools.protector.PackProtectorScreen
+import dev.kyle.mctools.shop.ShopEditorScreen
 import dev.kyle.mctools.version.VersionConverterScreen
 import dev.kyle.mctools.ui.KButton
 import dev.kyle.mctools.ui.KyleTheme
@@ -80,6 +82,8 @@ fun KyleApp(prefs: Prefs) {
                     ToolId.PROTECTOR -> PackProtectorScreen(prefs) { open = null }
                     ToolId.MEG -> MegConverterScreen(prefs) { open = null }
                     ToolId.VERSION -> VersionConverterScreen(prefs) { open = null }
+                    ToolId.MENUS -> DeluxeMenusEditorScreen(prefs) { open = null }
+                    ToolId.SHOP -> ShopEditorScreen(prefs) { open = null }
                     else -> ComingSoon(tool) { open = null }
                 }
             }

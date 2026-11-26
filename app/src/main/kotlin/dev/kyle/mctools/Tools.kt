@@ -24,5 +24,5 @@ enum class ToolId(val title: String, val subtitle: String, val icon: ImageVector
     SHOP("ShopGUI Editor", "Edit shops, sections and prices.", Icons.Default.ShoppingCart, 4, "ShopGuiEditor"),
     RANKS("Rank Prefix Editor", "Edit rank prefixes with image previews.", Icons.Default.Star, 5, "RankPrefixEditor");
 
-    val available: Boolean get() = phase <= 3
+    val available: Boolean get() = phase <= 4
 }

@@ -22,12 +22,25 @@ object Yaml {
                 is Map<*, *> ->
                     if (v.isEmpty()) sb.append(" {}\n") else { sb.append('\n'); writeMap(v, indent + 2, sb) }
                 is List<*> ->
-                    if (v.isEmpty()) sb.append(" []\n") else {
-                        sb.append('\n')
-                        for (item in v) sb.append(" ".repeat(indent + 2)).append("- ").append(scalar(item)).append('\n')
-                    }
+                    if (v.isEmpty()) sb.append(" []\n") else { sb.append('\n'); writeList(v, indent + (if (sameIndentLists) 0 else 2), sb) }
                 else -> sb.append(' ').append(scalar(v)).append('\n')
             }
+        }
+    }
+
+    /** Set to true to write lists at the same indent as their key (the style many plugin docs use). */
+    var sameIndentLists = false
+
+    private fun writeList(l: List<*>, indent: Int, sb: StringBuilder) {
+        val pad = " ".repeat(indent)
+        for (item in l) {
+            if (item is Map<*, *> && item.isNotEmpty()) {
+                val inner = StringBuilder()
+                writeMap(item, indent + 2, inner)
+                sb.append(pad).append("- ").append(inner.substring(indent + 2))
+            } else if (item is Map<*, *>) sb.append(pad).append("- {}\n")
+            else if (item is List<*>) sb.append(pad).append("- ").append(if (item.isEmpty()) "[]" else item.joinToString(", ", "[", "]") { scalar(it) }).append('\n')
+            else sb.append(pad).append("- ").append(scalar(item)).append('\n')
         }
     }
 
