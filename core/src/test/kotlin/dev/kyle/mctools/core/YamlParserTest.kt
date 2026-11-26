@@ -108,7 +108,9 @@ class YamlParserTest {
     }
 
     @Test fun dumpQuotesRiskyStringsAndKeepsTypes() {
-        val out = Yaml.dump(linkedMapOf("a" to "&aHello", "b" to "10", "c" to 10L, "d" to listOf(linkedMapOf("x" to 1L, "y" to "z w"))))
-        assertEquals("a: \"&aHello\"\nb: \"10\"\nc: 10\nd:\n  - x: 1\n    y: \"z w\"\n", out)
+        val out = Yaml.dump(linkedMapOf("a" to "&aHello", "b" to "10", "c" to 10L, "d" to listOf(linkedMapOf("x" to 1L, "name" to "z w"))))
+        assertEquals("a: \"&aHello\"\nb: \"10\"\nc: 10\nd:\n  - x: 1\n    name: \"z w\"\n", out)
+        // Keys YAML 1.1 reads as booleans (y, n, yes, no...) are quoted so they stay text.
+        assertEquals("\"y\": 1\n", Yaml.dump(linkedMapOf("y" to 1L)))
     }
 }
