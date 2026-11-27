@@ -2,6 +2,10 @@
 
 Newest first. Each section starts with `## <version>`; the release workflow copies the matching section into the GitHub release notes, and the app shows it in About.
 
+## 0.4.1 - 2026-11-28
+- DeluxeMenus Editor: edit requirements for the menu (open) and for each item (view, left/right click, shift click, any click). Pick the type (has permission, has money, has item, string equals/contains, regex, string length, number comparisons, JavaScript, is object), negate it with a switch, fill in its settings, add deny commands, mark it optional, and set minimum requirements, stop at success and group-wide commands. Warns when a click requirement has no matching click commands.
+- DeluxeMenus Editor: Filler button. Fills every empty slot with one item (one `slots` list), pick a glass pane color or any material, remove it with one tap. Slots you use later leave the filler automatically.
+
 ## 0.4.0 - 2026-11-27
 - DeluxeMenus Editor: open or create a menu, edit title, open command and size, tap slots on a chest grid to edit items (material, name, lore, amount, click commands), warnings for bad slots and missing [tags], saves the .yml plus the config.yml entry. Settings the editor doesn't know are kept.
 - ShopGUI Editor (EconomyShopGUI v6 / Premium v5 layout): edit pages, items, buy/sell prices, names and lore; change all prices by a factor; edit the section (main menu button) file; saves shops/ and sections/ with matching names. Premium keys are kept.

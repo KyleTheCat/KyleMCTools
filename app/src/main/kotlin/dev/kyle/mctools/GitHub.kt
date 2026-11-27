@@ -37,6 +37,7 @@ data class GitHubState(
 
 /** What the app shows when GitHub can't be reached. */
 val BuiltInChangelog = listOf(
+    "0.4.1" to "DeluxeMenus Editor: requirements and filler button.",
     "0.4.0" to "DeluxeMenus Editor and ShopGUI Editor.",
     "0.3.0" to "MEG Converter and Version Converter.",
     "0.2.0" to "Pack Optimizer and Pack Protector.",

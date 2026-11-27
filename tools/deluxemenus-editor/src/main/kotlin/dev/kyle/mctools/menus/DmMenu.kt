@@ -82,6 +82,7 @@ class DmMenu(var name: String, val root: YMap) {
     fun keyAtSlot(slot: Int): String? = items.entries.firstOrNull { (it.value as? Map<*, *>)?.let { m -> slotsOf(m as YMap).contains(slot) } == true }?.key
 
     fun addItem(slot: Int, material: String = "STONE"): String {
+        releaseFillerSlot(slot)
         var key = "item_$slot"
         var n = 2
         while (items.containsKey(key)) { key = "item_${slot}_$n"; n++ }
@@ -91,12 +92,59 @@ class DmMenu(var name: String, val root: YMap) {
 
     fun removeItem(key: String) { items.remove(key) }
 
-    fun setSlot(item: YMap, slot: Int) { item.remove("slots"); item["slot"] = slot.toLong() }
+    fun setSlot(item: YMap, slot: Int) {
+        if (!isFillerItem(item)) releaseFillerSlot(slot)
+        item.remove("slots"); item["slot"] = slot.toLong()
+    }
+
+    // ---- filler ----
+    fun isFillerKey(k: String) = k.startsWith("filler", ignoreCase = true)
+    private fun isFillerItem(item: YMap) = items.entries.any { it.value === item && isFillerKey(it.key) }
+    fun fillerKey(): String? = items.keys.firstOrNull { isFillerKey(it) }
+    fun emptySlots(): List<Int> = (0 until size).filter { keyAtSlot(it) == null }
+
+    /** One filler item (with a slots list) on every empty slot. Returns how many slots were filled. */
+    fun fillEmpty(material: String, name: String): Int {
+        val empty = emptySlots()
+        if (empty.isEmpty()) return 0
+        val key = fillerKey() ?: "filler"
+        val fi = item(key) ?: YMap().also { items[key] = it }
+        val all = (slotsOf(fi) + empty).distinct().sorted()
+        fi["material"] = material.trim().uppercase().ifEmpty { "GRAY_STAINED_GLASS_PANE" }
+        fi["display_name"] = if (name.isEmpty()) " " else name
+        fi.remove("slot")
+        fi["slots"] = all.map { it.toLong() }
+        return empty.size
+    }
+
+    /** Takes one slot away from the filler so a real item can go there. */
+    fun releaseFillerSlot(slot: Int) {
+        val key = fillerKey() ?: return
+        val fi = item(key) ?: return
+        val rest = slotsOf(fi).filter { it != slot }
+        if (rest.size == slotsOf(fi).size) return
+        if (rest.isEmpty()) items.remove(key) else { fi.remove("slot"); fi["slots"] = rest.map { it.toLong() } }
+    }
+
+    fun removeFiller(): Boolean {
+        val key = fillerKey() ?: return false
+        items.remove(key)
+        return true
+    }
+
+    /** Drops filler slots that are outside the menu after it was made smaller. */
+    fun trimFiller() {
+        val key = fillerKey() ?: return
+        val fi = item(key) ?: return
+        val keep = slotsOf(fi).filter { it in 0 until size }
+        if (keep.isEmpty()) items.remove(key) else { fi.remove("slot"); fi["slots"] = keep.map { it.toLong() } }
+    }
 
     fun validate(): List<String> {
         val w = ArrayList<String>()
         if (size % 9 != 0 || size !in 9..54) w += "size must be a multiple of 9 between 9 and 54 (now $size)."
         if (!root.containsKey("open_command")) w += "No open_command: the menu can only be opened by other menus or commands."
+        (root["open_requirement"] as? YMap)?.let { w += DmReq.validateGroup("Menu", "open_requirement", it, true) }
         val used = HashMap<Int, String>()
         for ((key, v) in items) {
             val it = v as? YMap
@@ -109,6 +157,12 @@ class DmMenu(var name: String, val root: YMap) {
                 val other = used[s]
                 if (other != null && other != key && it["priority"] == null && (items[other] as? YMap)?.get("priority") == null) w += "Items $other and $key share slot $s. Give them a priority or view requirements."
                 used.putIfAbsent(s, key)
+            }
+            for (gk in DmReq.itemGroups) {
+                val group = it[gk] as? YMap ?: continue
+                val ck = DmReq.commandsKeyFor(gk)
+                val hasCommands = ck == null || ((it[ck] as? List<*>)?.isNotEmpty() == true)
+                w += DmReq.validateGroup("Item $key", gk, group, hasCommands)
             }
             for (ck in commandKeys) for (cmd in (it[ck] as? List<*>) ?: emptyList<Any?>()) {
                 val s = cmd?.toString()?.trim() ?: continue
